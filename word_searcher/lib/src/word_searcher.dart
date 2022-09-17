@@ -60,7 +60,7 @@ class _WordSearcherState extends State<_WordSearcher> {
     return BlocBuilder<WordSearcherCubit, WordSearcherState>(
       builder: (context, state) {
         if (state is WordSearcherLoaded) {
-          return ListView(
+          return Column(
             children: [
               Stack(
                 children: [
@@ -129,7 +129,12 @@ class _WordSearcherState extends State<_WordSearcher> {
                           (wordItem) => Padding(
                             padding: const EdgeInsets.all(4),
                             child: Chip(
-                              label: Text(wordItem.word),
+                              label: Text(
+                                wordItem.word,
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                ),
+                              ),
                               backgroundColor:
                                   wordItem.found ? Colors.greenAccent : Colors.redAccent,
                             ),
