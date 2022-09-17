@@ -1,0 +1,11 @@
+name: word_searcher
+
+packages:
+  - /**
+
+ignore:
+  - .fvm/**
+  - .dart_tool/**
+
+scripts:
+  format: melos exec "flutter format ."
