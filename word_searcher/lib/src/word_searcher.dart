@@ -60,55 +60,83 @@ class _WordSearcherState extends State<_WordSearcher> {
     return BlocBuilder<WordSearcherCubit, WordSearcherState>(
       builder: (context, state) {
         if (state is WordSearcherLoaded) {
-          return Stack(
+          return ListView(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                key: _wordPuzzleKey,
-                children: state.puzzle.puzzle
-                        ?.map<Row>(
-                          (row) => Row(
-                            children: row.map((item) {
-                              final topLeftItem =
-                                  state.puzzle.puzzle?.first == row && row.first == item;
-                              final topRightItem =
-                                  state.puzzle.puzzle?.first == row && row.last == item;
-                              final bottomLeftItem =
-                                  state.puzzle.puzzle?.last == row && row.first == item;
-                              final bottomRightItem =
-                                  state.puzzle.puzzle?.last == row && row.last == item;
-                              return Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      width: 0.5,
+              Stack(
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    key: _wordPuzzleKey,
+                    children: state.puzzle.puzzle
+                            ?.map<Row>(
+                              (row) => Row(
+                                children: row.map((item) {
+                                  final topLeftItem =
+                                      state.puzzle.puzzle?.first == row && row.first == item;
+                                  final topRightItem =
+                                      state.puzzle.puzzle?.first == row && row.last == item;
+                                  final bottomLeftItem =
+                                      state.puzzle.puzzle?.last == row && row.first == item;
+                                  final bottomRightItem =
+                                      state.puzzle.puzzle?.last == row && row.last == item;
+                                  return Expanded(
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 0.5,
+                                          ),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: topLeftItem
+                                                ? const Radius.circular(5)
+                                                : Radius.zero,
+                                            topRight: topRightItem
+                                                ? const Radius.circular(5)
+                                                : Radius.zero,
+                                            bottomLeft: bottomLeftItem
+                                                ? const Radius.circular(5)
+                                                : Radius.zero,
+                                            bottomRight: bottomRightItem
+                                                ? const Radius.circular(5)
+                                                : Radius.zero,
+                                          ),
+                                        ),
+                                        height: 50,
+                                        child: Center(
+                                          child: Text(item),
+                                        ),
+                                      ),
                                     ),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: topLeftItem ? const Radius.circular(5) : Radius.zero,
-                                      topRight:
-                                          topRightItem ? const Radius.circular(5) : Radius.zero,
-                                      bottomLeft:
-                                          bottomLeftItem ? const Radius.circular(5) : Radius.zero,
-                                      bottomRight:
-                                          bottomRightItem ? const Radius.circular(5) : Radius.zero,
-                                    ),
-                                  ),
-                                  height: 50,
-                                  child: Center(
-                                    child: Text(item),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                                  );
+                                }).toList(),
+                              ),
+                            )
+                            .toList() ??
+                        [],
+                  ),
+                  Positioned.fill(
+                    child: _DrawOverlay(
+                      onPathComplete: wordSearcherCubit.validateLine,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Wrap(
+                children: state.words
+                        ?.map<Widget>(
+                          (wordItem) => Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Chip(
+                              label: Text(wordItem.word),
+                              backgroundColor:
+                                  wordItem.found ? Colors.greenAccent : Colors.redAccent,
+                            ),
                           ),
                         )
                         .toList() ??
                     [],
-              ),
-              Positioned.fill(
-                child: _DrawOverlay(
-                  onPathComplete: wordSearcherCubit.validateLine,
-                ),
               ),
             ],
           );

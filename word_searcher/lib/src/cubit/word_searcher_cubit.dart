@@ -7,6 +7,7 @@ import 'package:word_searcher/src/check_orientations.dart';
 import 'package:word_searcher/src/orientations.dart';
 import 'package:word_searcher/src/skip_orientations.dart';
 import 'package:word_searcher/src/utils.dart';
+import 'package:word_searcher/src/word_item.dart';
 
 part 'word_searcher_state.dart';
 
@@ -60,6 +61,9 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
   /// Found words
   final _foundWords = <String>[];
 
+  /// Word Items
+  final _wordItems = <WordItem>[];
+
   void _init() {
     emit(
       WordSearcherLoading(),
@@ -72,7 +76,7 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
       ),
     );
     emit(
-      WordSearcherLoaded(puzzle: _puzzle!),
+      WordSearcherLoaded(puzzle: _puzzle!, words: _wordItems),
     );
   }
 
@@ -101,6 +105,8 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
         // if a word didn't fit in the puzzle, give up
         _wordsNotPlaced.add(words[i]);
         return null;
+      } else {
+        _wordItems.add(WordItem(word: words[i]));
       }
     }
     // return the puzzle
@@ -559,18 +565,24 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
       }
     });
     if (valid) {
-      if (!_foundWords.contains(foundWord)) {
-        _foundWords.add(foundWord);
+      if (!_wordItems.firstWhere((item) => item.word == foundWord).found) {
+        for (final item in _wordItems) {
+          if (item.word == foundWord) {
+            final updatedItem = item.copyWith(found: true);
+            _wordItems[_wordItems.indexOf(item)] = updatedItem;
+          }
+        }
       } else {
         valid = false;
       }
       _checkPuzzleCompleted();
     }
+    emit(WordSearcherLoaded(puzzle: _puzzle!, words: _wordItems));
     return valid;
   }
 
   void _checkPuzzleCompleted() {
-    if (_validWordListPositions.length == _foundWords.length) {
+    if (_validWordListPositions.length == _wordItems.where((item) => item.found).length) {
       _onPuzzleCompleted();
     }
   }

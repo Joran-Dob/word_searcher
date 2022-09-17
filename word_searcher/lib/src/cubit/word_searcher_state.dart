@@ -9,8 +9,10 @@ class WordSearcherLoading extends WordSearcherState {}
 
 class WordSearcherLoaded extends WordSearcherState {
   final WSNewPuzzle puzzle;
+  final List<WordItem> words;
 
   WordSearcherLoaded({
     required this.puzzle,
+    required this.words,
   });
 }
