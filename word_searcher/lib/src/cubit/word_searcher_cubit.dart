@@ -538,6 +538,7 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
   /// and return the boolean result
   bool validateLine(
     List<Offset> positions,
+    Color lineColor,
   ) {
     var valid = false;
     var foundWord = '';
@@ -568,7 +569,10 @@ class WordSearcherCubit extends Cubit<WordSearcherState> {
       if (!_wordItems.firstWhere((item) => item.word == foundWord).found) {
         for (final item in _wordItems) {
           if (item.word == foundWord) {
-            final updatedItem = item.copyWith(found: true);
+            final updatedItem = item.copyWith(
+              found: true,
+              foundChipColor: lineColor,
+            );
             _wordItems[_wordItems.indexOf(item)] = updatedItem;
           }
         }

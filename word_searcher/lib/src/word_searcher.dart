@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:word_searcher/src/cubit/word_searcher_cubit.dart';
+import 'dart:math' as math;
 
 class WordSearcher extends StatelessWidget {
   const WordSearcher({
@@ -124,24 +125,38 @@ class _WordSearcherState extends State<_WordSearcher> {
               ),
               const SizedBox(height: 20),
               Wrap(
-                children: state.words
-                        ?.map<Widget>(
-                          (wordItem) => Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Chip(
-                              label: Text(
-                                wordItem.word,
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                              backgroundColor:
-                                  wordItem.found ? Colors.greenAccent : Colors.redAccent,
+                children: state.words.map<Widget>(
+                  (wordItem) {
+                    final backgroundColor =
+                        wordItem.found ? wordItem.foundChipColor : Colors.redAccent;
+                    return Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(
+                              8,
                             ),
                           ),
-                        )
-                        .toList() ??
-                    [],
+                          color: backgroundColor,
+                        ),
+                        child: Text(
+                          wordItem.word,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: backgroundColor.computeLuminance() > 0.5
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ).toList(),
               ),
             ],
           );
@@ -158,7 +173,7 @@ class _DrawOverlay extends StatefulWidget {
     required this.onPathComplete,
   });
 
-  final bool Function(List<Offset> path) onPathComplete;
+  final bool Function(List<Offset> path, Color selectedLineColor) onPathComplete;
 
   @override
   State<_DrawOverlay> createState() => _DrawOverlayState();
@@ -168,7 +183,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   List<_DrawnLine> lines = <_DrawnLine>[];
   _DrawnLine line = _DrawnLine([], Colors.black, 2);
   Color selectedColor = Colors.black;
-  double selectedWidth = 5;
+  double selectedWidth = 10;
 
   StreamController<List<_DrawnLine>> linesStreamController =
       StreamController<List<_DrawnLine>>.broadcast();
@@ -229,6 +244,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   void onPanStart(DragStartDetails details) {
     final box = context.findRenderObject()! as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
+    selectedColor = Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     line = _DrawnLine([point], selectedColor, selectedWidth);
   }
 
@@ -242,7 +258,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   }
 
   void onPanEnd(DragEndDetails details) {
-    if (widget.onPathComplete(line.path)) {
+    if (widget.onPathComplete(line.path, selectedColor)) {
       lines = List.from(lines)..add(line);
       linesStreamController.add(lines);
     } else {
@@ -271,11 +287,11 @@ class _DrawPainter extends CustomPainter {
       ..strokeWidth = 5.0;
 
     for (var i = 0; i < lines.length; ++i) {
-      for (var j = 0; j < lines[i].path.length - 1; ++j) {
-        paint
-          ..color = lines[i].color
-          ..strokeWidth = lines[i].width;
-        canvas.drawLine(lines[i].path[j], lines[i].path[j + 1], paint);
+      paint
+        ..color = lines[i].color
+        ..strokeWidth = lines[i].width;
+      if (lines[i].path.length > 1) {
+        canvas.drawLine(lines[i].path.first, lines[i].path.last, paint);
       }
     }
   }
