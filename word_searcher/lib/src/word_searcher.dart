@@ -84,25 +84,6 @@ class _WordSearcherState extends State<_WordSearcher> {
                                     child: AspectRatio(
                                       aspectRatio: 1,
                                       child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            width: 0.5,
-                                          ),
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: topLeftItem
-                                                ? const Radius.circular(5)
-                                                : Radius.zero,
-                                            topRight: topRightItem
-                                                ? const Radius.circular(5)
-                                                : Radius.zero,
-                                            bottomLeft: bottomLeftItem
-                                                ? const Radius.circular(5)
-                                                : Radius.zero,
-                                            bottomRight: bottomRightItem
-                                                ? const Radius.circular(5)
-                                                : Radius.zero,
-                                          ),
-                                        ),
                                         height: 50,
                                         child: Center(
                                           child: Text(item),
@@ -127,8 +108,7 @@ class _WordSearcherState extends State<_WordSearcher> {
               Wrap(
                 children: state.words.map<Widget>(
                   (wordItem) {
-                    final backgroundColor =
-                        wordItem.found ? wordItem.foundChipColor : Colors.redAccent;
+                    final backgroundColor = wordItem.found ? wordItem.foundChipColor : Colors.white;
                     return Padding(
                       padding: const EdgeInsets.all(4),
                       child: Container(
@@ -183,7 +163,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   List<_DrawnLine> lines = <_DrawnLine>[];
   _DrawnLine line = _DrawnLine([], Colors.black, 2);
   Color selectedColor = Colors.black;
-  double selectedWidth = 10;
+  double selectedWidth = 20;
 
   StreamController<List<_DrawnLine>> linesStreamController =
       StreamController<List<_DrawnLine>>.broadcast();
@@ -244,7 +224,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   void onPanStart(DragStartDetails details) {
     final box = context.findRenderObject()! as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    selectedColor = Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+    selectedColor = Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.2);
     line = _DrawnLine([point], selectedColor, selectedWidth);
   }
 
