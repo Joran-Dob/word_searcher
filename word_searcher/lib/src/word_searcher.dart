@@ -86,7 +86,7 @@ class _WordSearcherState extends State<_WordSearcher> {
                                       child: Container(
                                         height: 50,
                                         child: Center(
-                                          child: Text(item),
+                                          child: Text(item.toUpperCase()),
                                         ),
                                       ),
                                     ),
@@ -163,7 +163,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   List<_DrawnLine> lines = <_DrawnLine>[];
   _DrawnLine line = _DrawnLine([], Colors.black, 2);
   Color selectedColor = Colors.black;
-  double selectedWidth = 20;
+  double selectedWidth = 30;
 
   StreamController<List<_DrawnLine>> linesStreamController =
       StreamController<List<_DrawnLine>>.broadcast();
@@ -224,7 +224,7 @@ class _DrawOverlayState extends State<_DrawOverlay> {
   void onPanStart(DragStartDetails details) {
     final box = context.findRenderObject()! as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    selectedColor = Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.2);
+    selectedColor = Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.4);
     line = _DrawnLine([point], selectedColor, selectedWidth);
   }
 
